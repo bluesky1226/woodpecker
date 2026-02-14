@@ -14,6 +14,7 @@ class Aurora : public QMainWindow {
 public:
     double startTime;
     int wsize;
+
     Aurora(QWidget *parent = nullptr);
     ~Aurora();
 

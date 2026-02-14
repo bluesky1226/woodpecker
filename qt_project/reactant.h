@@ -13,8 +13,6 @@
 #include <map>
 
 #define ADXL345_NUM     8
-#define MAX_DATA        300
-#define QT_SAMPLE_RATE  1500    // Hz
 
 class Reactant: public QMainWindow {
     Q_OBJECT
@@ -32,7 +30,7 @@ public:
         "ADXL345_7",
         "ADXL345_8"
     };
-    vector<string> lnxdev_list = {
+    vector<string> lnx_dev_name_list = {
         "/dev/spidev0.0",
         "/dev/spidev0.1",
         "/dev/spidev1.0",
@@ -40,11 +38,6 @@ public:
         "/dev/spidev1.2"
     };
 
-    map<string, int> cs_dic = {
-        {"/dev/spidev0.0", 5},
-        {"/dev/spidev0.0", 6},
-        {"/dev/spidev1.0", 26}
-    };
     vector<ADXL345*> adxl345_list = {
         nullptr, nullptr, nullptr, nullptr,
         nullptr, nullptr, nullptr, nullptr
@@ -53,9 +46,10 @@ public:
     Reactant(QWidget *parent = nullptr);
     ~Reactant();
 
+    void initialize_adx345();
+
 private slots:
     void handleToggle(bool checked, int index, QPushButton *btn);
-    void set_plot_ind(QCustomPlot *customPlot, int index);
 
 private:
     QVector<double> vtime, vx, vy, vz;

@@ -1,5 +1,0 @@
-/home/rjc/malon/practice/qt_project/build/CMakeFiles/Aerobic.dir
-/home/rjc/malon/practice/qt_project/build/CMakeFiles/edit_cache.dir
-/home/rjc/malon/practice/qt_project/build/CMakeFiles/rebuild_cache.dir
-/home/rjc/malon/practice/qt_project/build/CMakeFiles/Aerobic_autogen_timestamp_deps.dir
-/home/rjc/malon/practice/qt_project/build/CMakeFiles/Aerobic_autogen.dir
