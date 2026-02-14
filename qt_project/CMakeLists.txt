@@ -6,7 +6,10 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Find Qt6 components
-find_package(Qt6 REQUIRED COMPONENTS Widgets PrintSupport)
+find_package(Qt6 REQUIRED COMPONENTS Widgets
+    PrintSupport
+    Concurrent
+)
 qt_standard_project_setup()
 
 # Add your source file (e.g., main.cpp)
@@ -23,6 +26,7 @@ qt_add_executable(Aerobic
 target_link_libraries(Aerobic PRIVATE
     Qt6::Widgets
     Qt6::PrintSupport
+    Qt6::Concurrent
     gpiodcxx
 )
 
@@ -34,8 +38,8 @@ target_link_libraries(Aerobic PRIVATE
 # set(CMAKE_CXX_STANDARD 17)
 # set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# include_directories(/usr/include/aarch64-linux-gnu/qt6)
-# include_directories(/usr/include/aarch64-linux-gnu/qt6/QtDataVisualization)
+# # include_directories(/usr/include/aarch64-linux-gnu/qt6)
+# # include_directories(/usr/include/aarch64-linux-gnu/qt6/QtDataVisualization)
 
 # # Find Qt6 components
 # find_package(Qt6 REQUIRED COMPONENTS Widgets PrintSupport DataVisualization)
@@ -47,6 +51,7 @@ target_link_libraries(Aerobic PRIVATE
 #     tower.cpp
 #     Aurora.cpp
 #     qcustomplot.cpp
+#     rpi5gpiomgr.cpp
 #     adxl345.cpp
 # )
 
@@ -55,6 +60,7 @@ target_link_libraries(Aerobic PRIVATE
 #     Qt6::Widgets
 #     Qt6::PrintSupport
 #     Qt6::DataVisualization
+#     gpiodcxx
 # )
 
 # =============================================================================================
@@ -83,4 +89,32 @@ target_link_libraries(Aerobic PRIVATE
 #     Qt6::Widgets
 #     Qt6::PrintSupport
 #     gpiodcxx
+# )
+
+# =============================================================================================
+
+# cmake_minimum_required(VERSION 3.16)
+# project(Serene2 VERSION 1.0 LANGUAGES CXX)
+
+# set(CMAKE_CXX_STANDARD 17)
+# set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# # include_directories(/usr/include/aarch64-linux-gnu/qt6)
+# # include_directories(/usr/include/aarch64-linux-gnu/qt6/QtDataVisualization)
+
+# # Find Qt6 components
+# find_package(Qt6 REQUIRED COMPONENTS Widgets PrintSupport DataVisualization)
+
+# qt_standard_project_setup()
+
+# # Add your source file (e.g., main.cpp)
+# qt_add_executable(Serene2
+#     main3d.cpp
+# )
+
+# # Link the Qt6 libraries
+# target_link_libraries(Serene2 PRIVATE
+#     Qt6::Widgets
+#     Qt6::PrintSupport
+#     Qt6::DataVisualization
 # )

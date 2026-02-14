@@ -1,0 +1,22 @@
+# IDE files
+.vscode/
+.idea/
+*.user
+
+# Build directories
+qt_project/build/
+bin/
+obj/
+
+# Compiled files
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+
+# Qt generated files
+Makefile*
+moc_*.cpp
+ui_*.h
+qrc_*.cpp

@@ -8,7 +8,8 @@
 #include <vector>
 #include <map>
 
-#define QT_SAMPLE_RATE  1500    // Hz
+// #define QT_SAMPLE_RATE  10    // Hz
+#define QT_SAMPLE_RATE  1000    // default Hz
 
 class Coral: public QWidget {
     Q_OBJECT
@@ -16,6 +17,8 @@ class Coral: public QWidget {
 public:
     double startTime;
     int wsize;
+    int chart_index;
+    QTimer *dataTimer;
     QVBoxLayout *vLayout;
     QHBoxLayout *hLayout;
     QPushButton *btn_calibration;
@@ -37,11 +40,15 @@ public:
     QCPGraph *graphYZ;
     QCustomPlot *coralplot;
 
-    Coral(QWidget *parent = nullptr, QString qs = QString(), ADXL345 *device = nullptr);
+    Coral(QWidget *parent = nullptr, QString qs = QString(), ADXL345 *device = nullptr, int index = 0);
     ~Coral();
 
-    void run_btn_tgl(bool check, QPushButton *btn);
-    void cal_btn_tgl(bool check)
+    void set_plot_limit(const QVector<double> vdata, int *bmin, int *bmax);
+
+private slots:
+    void run_btn_tgl(bool checked, QPushButton *btn);
+    void cal_btn_tgl();
+    int save_btn_tgl();
 
 private:
     QVector<double> vtime, vx, vy, vz;
