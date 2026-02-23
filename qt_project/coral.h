@@ -10,12 +10,14 @@
 
 // #define QT_SAMPLE_RATE  10    // Hz
 #define QT_SAMPLE_RATE  1000    // default Hz
+#define RUN_TIMER_LIMIT 20
 
 class Coral: public QWidget {
     Q_OBJECT
 
 public:
-    double startTime;
+    qint64 startTime;
+    qint64 run_timer_start;
     int wsize;
     int chart_index;
     QTimer *dataTimer;

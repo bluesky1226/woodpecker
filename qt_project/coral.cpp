@@ -8,6 +8,7 @@
 #include <fstream>
 #include <QLineEdit>
 #include <thread>
+#include <QDebug>
 // #include <QtConcurrent>
 
 using namespace std;
@@ -62,16 +63,16 @@ Coral::Coral(QWidget *parent, QString qs, ADXL345 *device, int index) : QWidget(
     rectXZ->axis(QCPAxis::atLeft)->setNumberFormat("f");
     rectYZ->axis(QCPAxis::atLeft)->setNumberFormat("f");
 
-    rectX->axis(QCPAxis::atBottom)->setNumberFormat("f");
-    rectY->axis(QCPAxis::atBottom)->setNumberFormat("f");
-    rectZ->axis(QCPAxis::atBottom)->setNumberFormat("f");
+    rectX->axis(QCPAxis::atBottom)->setNumberFormat("gb");
+    rectY->axis(QCPAxis::atBottom)->setNumberFormat("gb");
+    rectZ->axis(QCPAxis::atBottom)->setNumberFormat("gb");
     rectXY->axis(QCPAxis::atBottom)->setNumberFormat("f");
     rectXZ->axis(QCPAxis::atBottom)->setNumberFormat("f");
     rectYZ->axis(QCPAxis::atBottom)->setNumberFormat("f");
 
-    rectX->axis(QCPAxis::atLeft)->setNumberPrecision(ndp);
-    rectY->axis(QCPAxis::atLeft)->setNumberPrecision(ndp);
-    rectZ->axis(QCPAxis::atLeft)->setNumberPrecision(ndp);
+    rectX->axis(QCPAxis::atLeft)->setNumberPrecision(1);
+    rectY->axis(QCPAxis::atLeft)->setNumberPrecision(1);
+    rectZ->axis(QCPAxis::atLeft)->setNumberPrecision(1);
     rectXY->axis(QCPAxis::atLeft)->setNumberPrecision(ndp);
     rectXZ->axis(QCPAxis::atLeft)->setNumberPrecision(ndp);
     rectYZ->axis(QCPAxis::atLeft)->setNumberPrecision(ndp);
@@ -151,7 +152,6 @@ Coral::Coral(QWidget *parent, QString qs, ADXL345 *device, int index) : QWidget(
                 this->btn_save->setEnabled(true);
                 this->btn_run->setEnabled(true);
                 this->btn_calibration->setEnabled(true);
-                this->btn_save->setAttribute(Qt::WA_TransparentForMouseEvents, true);
                 this->btn_save->setStyleSheet("");
             });
         });
@@ -181,7 +181,6 @@ Coral::Coral(QWidget *parent, QString qs, ADXL345 *device, int index) : QWidget(
                 this->btn_calibration->setEnabled(true);
                 this->btn_run->setEnabled(true);
                 this->btn_save->setEnabled(true);
-                this->btn_calibration->setAttribute(Qt::WA_TransparentForMouseEvents, true);
                 this->btn_calibration->setStyleSheet("");
             });
         });
@@ -193,7 +192,7 @@ Coral::Coral(QWidget *parent, QString qs, ADXL345 *device, int index) : QWidget(
         run_btn_tgl(checked, btn_run);
     });
 
-    startTime = QDateTime::currentDateTime().toMSecsSinceEpoch() / 1000.0;
+    this->startTime = QDateTime::currentDateTime().toMSecsSinceEpoch();
     wsize = 0;
     dataTimer = new QTimer(this);
     vx.clear();
@@ -202,8 +201,26 @@ Coral::Coral(QWidget *parent, QString qs, ADXL345 *device, int index) : QWidget(
     connect(dataTimer, &QTimer::timeout, this, [=]() {
         float x, y, z;
         int bmin_x, bmax_x, bmin_y, bmax_y, bmin_z, bmax_z, bmin_t, bmax_t;
-        double currentTime = QDateTime::currentDateTime().toMSecsSinceEpoch() / 1000.0;
-        double diff_time = currentTime - this->startTime;
+        qint64 currentTime = QDateTime::currentDateTime().toMSecsSinceEpoch();
+        qint64 diff_time = currentTime - this->startTime;
+        qint64 run_timer_diff = currentTime - this->run_timer_start;
+        qint64 run_timer_diff_min = run_timer_diff / 1000 / 60;
+
+        if (run_timer_diff_min >= RUN_TIMER_LIMIT)
+        {
+            this->dataTimer->stop();
+            this->btn_run->setText("Run");
+            this->btn_run->setChecked(false);
+            this->startTime = 0;
+            this->run_timer_start = 0;
+            this->vx.clear();
+            this->vy.clear();
+            this->vz.clear();
+            this->vtime.clear();
+            this->dataTimer->stop();
+            this->btn_calibration->setEnabled(true);
+            this->btn_save->setEnabled(true);
+        }
 
         accl->readXYZ(x, y, z);
         // printf("%.4f, %.4f, %.4f, %.4f\n", diff_time, x, y, z);
@@ -221,7 +238,7 @@ Coral::Coral(QWidget *parent, QString qs, ADXL345 *device, int index) : QWidget(
             this->vz.erase(this->vz.begin());
         }
         if (this->wsize > QT_SAMPLE_RATE) {
-            this->startTime = QDateTime::currentDateTime().toMSecsSinceEpoch() / 1000.0;
+            this->startTime = QDateTime::currentDateTime().toMSecsSinceEpoch();
             this->wsize = 0;
         }
 
@@ -234,27 +251,21 @@ Coral::Coral(QWidget *parent, QString qs, ADXL345 *device, int index) : QWidget(
 
         graphX->keyAxis()->setRange(0, bmax_t);
         graphX->valueAxis()->setRange(bmin_x, bmax_x);
-        // graphX->rescaleAxes();
 
         graphY->keyAxis()->setRange(0, bmax_t);
         graphY->valueAxis()->setRange(bmin_y, bmax_y);
-        // graphY->rescaleAxes();
 
         graphZ->keyAxis()->setRange(0, bmax_t);
         graphZ->valueAxis()->setRange(bmin_z, bmax_z);
-        // graphZ->rescaleAxes();
 
         graphXY->keyAxis()->setRange(bmin_x, bmax_x);
         graphXY->valueAxis()->setRange(bmin_y, bmax_y);
-        // graphXY->rescaleAxes();
 
         graphXZ->keyAxis()->setRange(bmin_x, bmax_x);
         graphXZ->valueAxis()->setRange(bmin_z, bmax_z);
-        // graphXZ->rescaleAxes();
 
         graphYZ->keyAxis()->setRange(bmin_y, bmax_y);
         graphYZ->valueAxis()->setRange(bmin_z, bmax_z);
-        // graphYZ->rescaleAxes();
 
         graphX->setData(vtime, vx);
         graphY->setData(vtime, vy);
@@ -276,13 +287,16 @@ void Coral::run_btn_tgl(bool checked, QPushButton *btn)
 {
     if (checked) {
         btn->setText("Stop");
+        this->startTime = QDateTime::currentDateTime().toMSecsSinceEpoch();
+        this->run_timer_start = QDateTime::currentDateTime().toMSecsSinceEpoch();
         float sample_time = (1 / QT_SAMPLE_RATE) * 1000;
         this->dataTimer->start(sample_time);
         this->btn_calibration->setEnabled(false);
         this->btn_save->setEnabled(false);
     } else {
         btn->setText("Run");
-        this->startTime = QDateTime::currentDateTime().toMSecsSinceEpoch() / 1000.0;
+        this->startTime = 0;
+        this->run_timer_start = 0;
         this->vx.clear();
         this->vy.clear();
         this->vz.clear();
